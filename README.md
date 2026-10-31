@@ -73,9 +73,9 @@ Alle Werte stellst du in der App ein. Die Fahrt wird zwischengespeichert, falls 
 
 - `core/`: reine Kotlin-Rechenlogik mit Unit-Tests (`./gradlew :core:test`)
 - `app/`: Android-App und Karoo-Extension ([karoo-ext](https://github.com/hammerheadnav/karoo-ext) 1.1.9)
-- GitHub Actions baut bei jedem Push. Ein Tag `v*` erzeugt ein Release mit `karoo-fuel.apk` und `manifest.json`.
+- GitHub Actions baut bei jedem Push. Steht auf `main` eine neue `versionName`, legt der Build automatisch Tag und Release mit `karoo-fuel.apk` und `manifest.json` an.
 
-**Neue Version veröffentlichen:** In `app/build.gradle.kts` `versionCode` erhöhen und `versionName` anpassen, dann einen Tag pushen, z. B. `v0.2.0`.
+**Neue Version veröffentlichen:** In `app/build.gradle.kts` `versionCode` erhöhen und `versionName` anpassen, z. B. `0.2.0`, und auf `main` pushen. Der Rest passiert automatisch.
 
 **Lokal bauen:** karoo-ext liegt auf GitHub Packages. Dafür brauchst du ein GitHub-Token mit `read:packages` in `~/.gradle/gradle.properties`:
 ```
