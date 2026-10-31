@@ -52,4 +52,8 @@
     <string name="label_glycogen_depletion">Start when this share of glycogen is used (%)</string>
     <string name="label_glycogen_store">Glycogen stores (g, 0 = automatic)</string>
     <string name="glycogen_store_hint">Automatic: %1$d g (6 g per kg body weight)</string>
+    <string name="section_hr_only">Only needed without a power meter</string>
+    <string name="section_hr_only_hint">With a power meter, energy is calculated from power. Age and sex are only used by the heart-rate formula: without a power meter, or automatically when the power signal drops out for more than 5 seconds.</string>
+    <string name="gauge_source_power">W</string>
+    <string name="gauge_source_hr">♥</string>
 </resources>

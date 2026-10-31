@@ -19,34 +19,6 @@
             style="@style/Hint"
             android:text="@string/profile_loading" />
 
-        <TextView
-            style="@style/Label"
-            android:text="@string/label_age" />
-
-        <EditText
-            android:id="@+id/age"
-            style="@style/Input"
-            android:inputType="number" />
-
-        <TextView
-            style="@style/Label"
-            android:text="@string/label_sex" />
-
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/sex_male"
-                style="@style/Radio"
-                android:text="@string/sex_male" />
-
-            <RadioButton
-                android:id="@+id/sex_female"
-                style="@style/Radio"
-                android:text="@string/sex_female" />
-        </RadioGroup>
 
         <TextView
             style="@style/Label"
@@ -140,6 +112,44 @@
             android:id="@+id/replace_share"
             style="@style/Input"
             android:inputType="number" />
+
+        <!-- Only used by the heart-rate formula (no power meter or power dropout) -->
+        <TextView
+            style="@style/Section"
+            android:text="@string/section_hr_only" />
+
+        <TextView
+            style="@style/Hint"
+            android:text="@string/section_hr_only_hint" />
+
+        <TextView
+            style="@style/Label"
+            android:text="@string/label_age" />
+
+        <EditText
+            android:id="@+id/age"
+            style="@style/Input"
+            android:inputType="number" />
+
+        <TextView
+            style="@style/Label"
+            android:text="@string/label_sex" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/sex_male"
+                style="@style/Radio"
+                android:text="@string/sex_male" />
+
+            <RadioButton
+                android:id="@+id/sex_female"
+                style="@style/Radio"
+                android:text="@string/sex_female" />
+        </RadioGroup>
 
         <Button
             android:id="@+id/save"

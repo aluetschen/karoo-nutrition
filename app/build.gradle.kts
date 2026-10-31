@@ -12,8 +12,8 @@ android {
         minSdk = 23
         targetSdk = 34
         // Bump both for every release (versionCode must always increase).
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.2.1"
     }
 
     // Signing key from GitHub Secrets (see README). Without secrets, the debug key is used.

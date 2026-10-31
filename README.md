@@ -20,7 +20,7 @@ Extension für den **Hammerhead Karoo 3**: berechnet während der Fahrt den Kalo
 | **Nächstes Gel (min)** | Minuten bis zum nächsten Gel |
 | **Gels** | Anzahl der Gels in dieser Fahrt |
 | **Glykogen %** | geschätzte verbleibende Glykogenspeicher |
-| **Fuel-Anzeige** (grafisch) | Minuten bis zum Gel, Fortschrittsbalken (grün → orange → rot), kcal/h und Glykogen |
+| **Fuel-Anzeige** (grafisch) | Minuten bis zum Gel, Fortschrittsbalken (grün → orange → rot), kcal/h und Glykogen. Oben rechts die Quelle: **W** = Wattmesser, orangefarbenes **♥** = Herzfrequenz (z. B. bei Wattmesser-Ausfall) |
 
 ### Tasten-Aktionen (Bonus Actions)
 
@@ -51,7 +51,7 @@ kcal/h = Watt × 3600 / 4184 / 0,24   →   200 W ≈ 717 kcal/h
 Als Untergrenze gilt der Ruheumsatz (ca. 1 kcal pro kg Körpergewicht und Stunde), z. B. beim Rollen bergab.
 
 **2. Energie aus der Herzfrequenz** (ohne Wattmesser)
-Formel nach Keytel et al. (2005). Sie berücksichtigt Puls, Gewicht, Alter und Geschlecht. Sie ist ungenauer als die Wattmessung, weil der Puls auch von Hitze, Müdigkeit und Koffein abhängt.
+Formel nach Keytel et al. (2005). Sie berücksichtigt Puls, Gewicht, Alter und Geschlecht. Die App nutzt sie auch automatisch, wenn das Leistungssignal länger als 5 Sekunden ausfällt. Alter und Geschlecht werden nur für diese Formel gebraucht. Sie ist ungenauer als die Wattmessung, weil der Puls auch von Hitze, Müdigkeit und Koffein abhängt.
 
 **3. Kohlenhydrat-Anteil**
 Je höher die Intensität (Leistung im Verhältnis zur FTP, sonst Anteil an der Herzfrequenzreserve), desto mehr Energie kommt aus Kohlenhydraten statt aus Fett:

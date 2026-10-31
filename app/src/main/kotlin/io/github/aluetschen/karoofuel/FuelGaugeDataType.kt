@@ -9,6 +9,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.widget.RemoteViews
+import io.github.aluetschen.karoofuel.core.EnergySource
 import io.hammerhead.karooext.extension.DataTypeImpl
 import io.hammerhead.karooext.internal.Emitter
 import io.hammerhead.karooext.internal.ViewEmitter
@@ -29,6 +30,7 @@ import kotlin.math.sqrt
  * Graphical data field "Fuel gauge":
  * - big: minutes until the next gel
  * - bar: progress towards the next gel (green -> orange -> red)
+ * - top right: energy source (W / ♥) and number of gels
  * - bottom line (if there is room): kcal/h and glycogen
  */
 class FuelGaugeDataType(
@@ -44,6 +46,8 @@ class FuelGaugeDataType(
         val kcalPerHour: Int?,
         val glycogen: Int,
         val fuelingActive: Boolean,
+        /** Where the energy currently comes from (null = no sensor data). */
+        val source: EnergySource?,
     )
 
     // The numeric value behind the graphic (e.g. for the field preview): minutes until the next gel
@@ -66,7 +70,7 @@ class FuelGaugeDataType(
         emitter.onNext(UpdateGraphicConfig(showHeader = true))
         val job = CoroutineScope(Dispatchers.Default).launch {
             if (config.preview) {
-                emitter.updateView(render(context, config, GaugeState(12, 52, 2, 650, 71, true)))
+                emitter.updateView(render(context, config, GaugeState(12, 52, 2, 650, 71, true, EnergySource.POWER)))
                 return@launch
             }
             engine.snapshot
@@ -78,6 +82,7 @@ class FuelGaugeDataType(
                         kcalPerHour = it.kcalPerHour?.let { k -> (k / 10).roundToInt() * 10 },
                         glycogen = it.glycogenPercent.roundToInt(),
                         fuelingActive = it.fuelingActive,
+                        source = it.source,
                     )
                 }
                 .distinctUntilChanged()
@@ -121,8 +126,21 @@ class FuelGaugeDataType(
         paint.textSize = small
         paint.color = mutedColor
         canvas.drawText(context.getString(R.string.gauge_minutes), pad * 2 + minutesWidth, baseline, paint)
+        // Top right: number of gels, and before it the source of the energy value
+        // ("W" = power meter, orange "♥" = heart rate fallback, "--" = no data)
         val gelsText = context.getString(R.string.gauge_gels, g.gels)
-        canvas.drawText(gelsText, w - pad - paint.measureText(gelsText), baseline, paint)
+        val gelsX = w - pad - paint.measureText(gelsText)
+        canvas.drawText(gelsText, gelsX, baseline, paint)
+        val sourceText = when (g.source) {
+            EnergySource.POWER -> context.getString(R.string.gauge_source_power)
+            EnergySource.HEART_RATE -> context.getString(R.string.gauge_source_hr)
+            null -> "--"
+        }
+        paint.typeface = Typeface.DEFAULT_BOLD
+        paint.color = if (g.source == EnergySource.HEART_RATE) Color.rgb(245, 124, 0) else mutedColor
+        canvas.drawText(sourceText, gelsX - pad * 2 - paint.measureText(sourceText), baseline, paint)
+        paint.typeface = Typeface.DEFAULT
+        paint.color = mutedColor
 
         // 2) Bar: progress towards the next gel
         val barTop = baseline + pad * 1.5f

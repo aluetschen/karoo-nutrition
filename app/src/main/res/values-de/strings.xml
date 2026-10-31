@@ -50,4 +50,6 @@
     <string name="label_glycogen_depletion">Start, wenn dieser Anteil Glykogen verbraucht ist (%)</string>
     <string name="label_glycogen_store">Glykogenspeicher (g, 0 = automatisch)</string>
     <string name="glycogen_store_hint">Automatisch: %1$d g (6 g pro kg Körpergewicht)</string>
+    <string name="section_hr_only">Nur nötig ohne Wattmesser</string>
+    <string name="section_hr_only_hint">Mit Wattmesser wird der Verbrauch aus der Leistung berechnet. Alter und Geschlecht nutzt nur die Herzfrequenz-Formel: ohne Wattmesser oder automatisch, wenn das Leistungssignal länger als 5 Sekunden ausfällt.</string>
 </resources>

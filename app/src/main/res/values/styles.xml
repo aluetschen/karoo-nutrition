@@ -46,4 +46,13 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/text_primary</item>
     </style>
+
+    <style name="Section">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
 </resources>
