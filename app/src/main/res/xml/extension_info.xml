@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtensionInfo
+    displayName="@string/app_name"
+    icon="@drawable/ic_gel"
+    id="karoo-fuel"
+    scansDevices="false">
+    <DataType
+        description="@string/dt_kcal_rate_desc"
+        displayName="@string/dt_kcal_rate"
+        graphical="false"
+        icon="@drawable/ic_gel"
+        typeId="kcal-rate" />
+    <DataType
+        description="@string/dt_kcal_total_desc"
+        displayName="@string/dt_kcal_total"
+        graphical="false"
+        icon="@drawable/ic_gel"
+        typeId="kcal-total" />
+    <DataType
+        description="@string/dt_carbs_rate_desc"
+        displayName="@string/dt_carbs_rate"
+        graphical="false"
+        icon="@drawable/ic_gel"
+        typeId="carbs-rate" />
+    <DataType
+        description="@string/dt_next_gel_desc"
+        displayName="@string/dt_next_gel"
+        graphical="false"
+        icon="@drawable/ic_gel"
+        typeId="next-gel" />
+    <DataType
+        description="@string/dt_gels_desc"
+        displayName="@string/dt_gels"
+        graphical="false"
+        icon="@drawable/ic_gel"
+        typeId="gels" />
+    <BonusAction
+        actionId="gel-taken"
+        displayName="@string/action_gel_taken" />
+    <BonusAction
+        actionId="gel-skipped"
+        displayName="@string/action_gel_skipped" />
+</ExtensionInfo>

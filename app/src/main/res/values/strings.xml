@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Karoo Fuel</string>
+
+    <string name="dt_kcal_rate">kcal/h</string>
+    <string name="dt_kcal_rate_desc">Current energy expenditure in kcal per hour (from power, otherwise heart rate)</string>
+    <string name="dt_kcal_total">kcal total</string>
+    <string name="dt_kcal_total_desc">Energy burned since the start of the ride</string>
+    <string name="dt_carbs_rate">Carbs g/h</string>
+    <string name="dt_carbs_rate_desc">Current carbohydrate burn in grams per hour</string>
+    <string name="dt_next_gel">Next gel (min)</string>
+    <string name="dt_next_gel_desc">Minutes until the next gel is due</string>
+    <string name="dt_gels">Gels</string>
+    <string name="dt_gels_desc">Number of gels taken during this ride</string>
+
+    <string name="action_gel_taken">Extra gel taken</string>
+    <string name="action_gel_skipped">Gel not taken</string>
+
+    <string name="alert_title">Time for a gel!</string>
+    <string name="alert_detail">%1$d g carbs · gel no. %2$d</string>
+
+    <string name="profile_loading">Reading Karoo rider profile…</string>
+    <string name="profile_info">From your Karoo profile: %1$d kg · FTP %2$d W · HR %3$d–%4$d bpm. Change these in the Karoo settings.</string>
+    <string name="label_age">Age (years)</string>
+    <string name="label_sex">Sex (for the heart-rate formula)</string>
+    <string name="sex_male">Male</string>
+    <string name="sex_female">Female</string>
+    <string name="label_gel_carbs">Carbohydrates per gel (g)</string>
+    <string name="label_max_carbs">Max. carbohydrates per hour (g)</string>
+    <string name="label_start_after">Start fueling after (min)</string>
+    <string name="label_replace_share">Replace this share of burned carbs (%)</string>
+    <string name="save">Save</string>
+    <string name="saved">Saved</string>
+    <string name="invalid_input">Please check your input</string>
+    <string name="disclaimer">All values are estimates. Not medical advice: listen to your body and test your fueling in training.</string>
+</resources>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dt_kcal_rate">kcal/h</string>
+    <string name="dt_kcal_rate_desc">Aktueller Energieverbrauch in kcal pro Stunde (aus Leistung, sonst Herzfrequenz)</string>
+    <string name="dt_kcal_total">kcal gesamt</string>
+    <string name="dt_kcal_total_desc">Verbrauchte Energie seit Fahrtbeginn</string>
+    <string name="dt_carbs_rate">KH g/h</string>
+    <string name="dt_carbs_rate_desc">Aktueller Kohlenhydratverbrauch in Gramm pro Stunde</string>
+    <string name="dt_next_gel">Nächstes Gel (min)</string>
+    <string name="dt_next_gel_desc">Minuten bis zum nächsten Gel</string>
+    <string name="dt_gels">Gels</string>
+    <string name="dt_gels_desc">Anzahl der genommenen Gels in dieser Fahrt</string>
+
+    <string name="action_gel_taken">Extra-Gel genommen</string>
+    <string name="action_gel_skipped">Gel nicht genommen</string>
+
+    <string name="alert_title">Zeit für ein Gel!</string>
+    <string name="alert_detail">%1$d g Kohlenhydrate · Gel Nr. %2$d</string>
+
+    <string name="profile_loading">Lese Karoo-Fahrerprofil…</string>
+    <string name="profile_info">Aus deinem Karoo-Profil: %1$d kg · FTP %2$d W · HF %3$d–%4$d bpm. Ändern in den Karoo-Einstellungen.</string>
+    <string name="label_age">Alter (Jahre)</string>
+    <string name="label_sex">Geschlecht (für die Herzfrequenz-Formel)</string>
+    <string name="sex_male">Männlich</string>
+    <string name="sex_female">Weiblich</string>
+    <string name="label_gel_carbs">Kohlenhydrate pro Gel (g)</string>
+    <string name="label_max_carbs">Max. Kohlenhydrate pro Stunde (g)</string>
+    <string name="label_start_after">Verpflegung starten nach (min)</string>
+    <string name="label_replace_share">Anteil verbrauchter KH ersetzen (%)</string>
+    <string name="save">Speichern</string>
+    <string name="saved">Gespeichert</string>
+    <string name="invalid_input">Bitte Eingaben prüfen</string>
+    <string name="disclaimer">Alle Werte sind Schätzungen und keine medizinische Beratung. Hör auf deinen Körper und teste deine Verpflegung im Training.</string>
+</resources>

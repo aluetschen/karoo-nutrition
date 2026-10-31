@@ -1,0 +1,11 @@
+{
+  "label": "Karoo Fuel",
+  "packageName": "io.github.aluetschen.karoofuel",
+  "latestApkUrl": "https://github.com/aluetschen/karoo-nutrition/releases/latest/download/karoo-fuel.apk",
+  "latestVersion": "__VERSION_NAME__",
+  "latestVersionCode": __VERSION_CODE__,
+  "developer": "aluetschen",
+  "description": "Live calorie and carbohydrate burn from power, heart rate, weight and ride time, with gel reminders during the ride.",
+  "releaseNotes": "See github.com/aluetschen/karoo-nutrition/releases",
+  "tags": ["training", "nutrition"]
+}
