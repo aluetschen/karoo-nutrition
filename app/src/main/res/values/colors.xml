@@ -5,5 +5,6 @@
     <color name="text_secondary">#FFB0B0B0</color>
     <color name="alert_background">#FFF57C00</color>
     <color name="alert_text">#FFFFFFFF</color>
+    <color name="alert_warning_background">#FFC62828</color>
     <color name="icon">#FFF57C00</color>
 </resources>

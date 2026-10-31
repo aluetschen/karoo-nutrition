@@ -3,7 +3,8 @@
     displayName="@string/app_name"
     icon="@drawable/ic_gel"
     id="karoo-fuel"
-    scansDevices="false">
+    scansDevices="false"
+    fitFile="true">
     <DataType
         description="@string/dt_kcal_rate_desc"
         displayName="@string/dt_kcal_rate"
@@ -34,6 +35,18 @@
         graphical="false"
         icon="@drawable/ic_gel"
         typeId="gels" />
+    <DataType
+        description="@string/dt_glycogen_desc"
+        displayName="@string/dt_glycogen"
+        graphical="false"
+        icon="@drawable/ic_gel"
+        typeId="glycogen" />
+    <DataType
+        description="@string/dt_gauge_desc"
+        displayName="@string/dt_gauge"
+        graphical="true"
+        icon="@drawable/ic_gel"
+        typeId="fuel-gauge" />
     <BonusAction
         actionId="gel-taken"
         displayName="@string/action_gel_taken" />

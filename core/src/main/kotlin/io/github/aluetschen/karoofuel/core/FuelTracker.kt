@@ -14,12 +14,23 @@ data class FuelState(
     val gelsTaken: Int = 0,
     /** Ride time of the last gel alert (null = no alert yet). */
     val lastGelAtSeconds: Double? = null,
+    /** The low-glycogen warning was already shown in this ride. */
+    val glycogenWarningShown: Boolean = false,
     /** Smoothed current values for display (about 30 s). */
     val kcalPerHour: Double? = null,
     val carbsBurnedPerHour: Double? = null,
-    /** Recommended intake, averaged over about 10 min, used for the "next gel" forecast. */
+    /** Averaged over about 10 min, used for forecasts. */
     val avgTargetCarbsPerHour: Double? = null,
+    val avgCarbsBurnedPerHour: Double? = null,
     val source: EnergySource? = null,
+)
+
+/** What happened in a time step. */
+data class TickResult(
+    /** A gel is due now. The caller shows the alert and then calls [FuelTracker.registerGel]. */
+    val gelDue: Boolean = false,
+    /** Glycogen just fell below the warning level (only once per ride). */
+    val glycogenLow: Boolean = false,
 )
 
 /**
@@ -30,12 +41,8 @@ class FuelTracker(state: FuelState = FuelState()) {
     var state: FuelState = state
         private set
 
-    /**
-     * Process a time step.
-     * @return true if a gel is due now. The caller shows the alert and then calls [registerGel].
-     */
-    fun tick(dtSeconds: Double, powerW: Double?, hr: Double?, profile: RiderProfile, settings: FuelSettings): Boolean {
-        if (dtSeconds <= 0) return false
+    fun tick(dtSeconds: Double, powerW: Double?, hr: Double?, profile: RiderProfile, settings: FuelSettings): TickResult {
+        if (dtSeconds <= 0) return TickResult()
         val s = state
         val rideSeconds = s.rideSeconds + dtSeconds
         val estimate = EnergyModel.estimateEnergy(powerW, hr, profile, settings)
@@ -48,21 +55,48 @@ class FuelTracker(state: FuelState = FuelState()) {
             val carbFraction = EnergyModel.carbFraction(EnergyModel.intensity(powerW, hr, profile))
             val carbsPerHour = estimate.kcalPerHour * carbFraction / EnergyModel.KCAL_PER_G_CARB
             val target = EnergyModel.targetCarbsPerHour(carbsPerHour, settings)
-            val fuelingActive = rideSeconds >= settings.startAfterMinutes * 60.0
-
-            s.copy(
+            val updated = s.copy(
                 rideSeconds = rideSeconds,
                 kcalTotal = s.kcalTotal + estimate.kcalPerHour * dtHours,
                 carbsBurnedG = s.carbsBurnedG + carbsPerHour * dtHours,
-                fuelDueG = if (fuelingActive) s.fuelDueG + target * dtHours else s.fuelDueG,
                 kcalPerHour = ema(s.kcalPerHour, estimate.kcalPerHour, dtSeconds, 30.0),
                 carbsBurnedPerHour = ema(s.carbsBurnedPerHour, carbsPerHour, dtSeconds, 30.0),
                 avgTargetCarbsPerHour = ema(s.avgTargetCarbsPerHour, target, dtSeconds, 600.0),
+                avgCarbsBurnedPerHour = ema(s.avgCarbsBurnedPerHour, carbsPerHour, dtSeconds, 600.0),
                 source = estimate.source,
             )
+            if (isFuelingActive(updated, profile, settings)) {
+                updated.copy(fuelDueG = updated.fuelDueG + target * dtHours)
+            } else {
+                updated
+            }
         }
-        return isGelDue(settings)
+
+        var glycogenLow = false
+        if (!state.glycogenWarningShown && glycogenFraction(profile, settings) < settings.glycogenWarningLevel) {
+            glycogenLow = true
+            state = state.copy(glycogenWarningShown = true)
+        }
+        return TickResult(gelDue = isGelDue(settings), glycogenLow = glycogenLow)
     }
+
+    /** Estimated remaining glycogen as a share of the full stores (0..1). Eaten carbs spare glycogen. */
+    fun glycogenFraction(profile: RiderProfile, settings: FuelSettings): Double {
+        val store = EnergyModel.glycogenStoreG(profile, settings)
+        if (store <= 0) return 1.0
+        return ((store - state.carbsBurnedG + state.carbsEatenG) / store).coerceIn(0.0, 1.0)
+    }
+
+    /** Has the fueling phase started (time or glycogen rule)? */
+    fun isFuelingActive(profile: RiderProfile, settings: FuelSettings): Boolean = isFuelingActive(state, profile, settings)
+
+    private fun isFuelingActive(s: FuelState, profile: RiderProfile, settings: FuelSettings): Boolean = when (settings.startMode) {
+        StartMode.TIME -> s.rideSeconds >= settings.startAfterMinutes * 60.0
+        StartMode.GLYCOGEN -> s.carbsBurnedG - s.carbsEatenG >= depletionThresholdG(profile, settings)
+    }
+
+    private fun depletionThresholdG(profile: RiderProfile, settings: FuelSettings): Double =
+        EnergyModel.glycogenStoreG(profile, settings) * settings.glycogenStartDepletion
 
     private fun isGelDue(settings: FuelSettings): Boolean {
         val s = state
@@ -70,6 +104,10 @@ class FuelTracker(state: FuelState = FuelState()) {
         val last = s.lastGelAtSeconds ?: return true
         return s.rideSeconds - last >= settings.minMinutesBetweenGels * 60.0
     }
+
+    /** Progress towards the next gel (0..1), for the graphical field. */
+    fun gelProgress(settings: FuelSettings): Double =
+        if (settings.gelCarbsG <= 0) 0.0 else (state.fuelDueG / settings.gelCarbsG).coerceIn(0.0, 1.0)
 
     /** A gel was taken (after an alert, or as an extra gel via a button). */
     fun registerGel(settings: FuelSettings) {
@@ -98,11 +136,23 @@ class FuelTracker(state: FuelState = FuelState()) {
     }
 
     /** Forecast: minutes until the next gel, or null if no estimate is possible yet. */
-    fun minutesToNextGel(settings: FuelSettings): Double? {
+    fun minutesToNextGel(profile: RiderProfile, settings: FuelSettings): Double? {
         val s = state
         val rate = s.avgTargetCarbsPerHour ?: return null
         if (rate < 1.0) return null
-        val waitForStart = max(0.0, settings.startAfterMinutes * 60.0 - s.rideSeconds) / 60.0
+        val waitForStart = if (isFuelingActive(profile, settings)) {
+            0.0
+        } else {
+            when (settings.startMode) {
+                StartMode.TIME -> max(0.0, settings.startAfterMinutes * 60.0 - s.rideSeconds) / 60.0
+                StartMode.GLYCOGEN -> {
+                    val burnRate = s.avgCarbsBurnedPerHour ?: return null
+                    if (burnRate < 1.0) return null
+                    val missing = depletionThresholdG(profile, settings) - (s.carbsBurnedG - s.carbsEatenG)
+                    max(0.0, missing) / burnRate * 60.0
+                }
+            }
+        }
         val byCarbs = max(0.0, settings.gelCarbsG - s.fuelDueG) / rate * 60.0
         val bySpacing = s.lastGelAtSeconds?.let { max(0.0, settings.minMinutesBetweenGels - (s.rideSeconds - it) / 60.0) } ?: 0.0
         return max(waitForStart + byCarbs, bySpacing)

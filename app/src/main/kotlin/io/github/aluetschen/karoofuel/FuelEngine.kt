@@ -5,6 +5,7 @@ import android.os.SystemClock
 import io.github.aluetschen.karoofuel.core.EnergySource
 import io.github.aluetschen.karoofuel.core.FuelTracker
 import io.github.aluetschen.karoofuel.core.RiderProfile
+import io.github.aluetschen.karoofuel.core.TickResult
 import io.hammerhead.karooext.KarooSystemService
 import io.hammerhead.karooext.models.DataType
 import io.hammerhead.karooext.models.InRideAlert
@@ -26,11 +27,19 @@ import kotlin.math.roundToInt
 /** What the data fields show. */
 data class FuelSnapshot(
     val recording: Boolean = false,
+    val paused: Boolean = false,
     val kcalPerHour: Double? = null,
     val kcalTotal: Double = 0.0,
     val carbsBurnedPerHour: Double? = null,
+    val carbsBurnedG: Double = 0.0,
+    val carbsEatenG: Double = 0.0,
     val minutesToNextGel: Double? = null,
     val gelsTaken: Int = 0,
+    /** Estimated remaining glycogen, 0..100 %. */
+    val glycogenPercent: Double = 100.0,
+    /** Progress towards the next gel, 0..1. */
+    val gelProgress: Double = 0.0,
+    val fuelingActive: Boolean = false,
     val source: EnergySource? = null,
 )
 
@@ -112,12 +121,12 @@ class FuelEngine(private val context: Context, private val karoo: KarooSystemSer
 
     private fun tick(dt: Double, nowMs: Long) {
         val recording = rideState is RideState.Recording
-        var gelDue = false
+        var result = TickResult()
         synchronized(lock) {
             if (recording) {
                 val settings = prefs.settings()
-                gelDue = tracker.tick(dt, power.fresh(nowMs), heartRate.fresh(nowMs), riderProfile(), settings)
-                if (gelDue) tracker.registerGel(settings)
+                result = tracker.tick(dt, power.fresh(nowMs), heartRate.fresh(nowMs), riderProfile(), settings)
+                if (result.gelDue) tracker.registerGel(settings)
                 if (nowMs - lastSaveMs > 30_000) {
                     prefs.saveState(tracker.state)
                     lastSaveMs = nowMs
@@ -125,7 +134,8 @@ class FuelEngine(private val context: Context, private val karoo: KarooSystemSer
             }
             publish()
         }
-        if (gelDue) showGelAlert()
+        if (result.gelDue) showGelAlert()
+        if (result.glycogenLow) showGlycogenAlert()
     }
 
     /** Bonus action: an extra gel was eaten. */
@@ -146,14 +156,45 @@ class FuelEngine(private val context: Context, private val karoo: KarooSystemSer
 
     private fun publish() {
         val s = tracker.state
+        val settings = prefs.settings()
+        val profile = riderProfile()
         _snapshot.value = FuelSnapshot(
             recording = rideState is RideState.Recording,
+            paused = rideState is RideState.Paused,
             kcalPerHour = s.kcalPerHour,
             kcalTotal = s.kcalTotal,
             carbsBurnedPerHour = s.carbsBurnedPerHour,
-            minutesToNextGel = tracker.minutesToNextGel(prefs.settings()),
+            carbsBurnedG = s.carbsBurnedG,
+            carbsEatenG = s.carbsEatenG,
+            minutesToNextGel = tracker.minutesToNextGel(profile, settings),
             gelsTaken = s.gelsTaken,
+            glycogenPercent = tracker.glycogenFraction(profile, settings) * 100.0,
+            gelProgress = tracker.gelProgress(settings),
+            fuelingActive = tracker.isFuelingActive(profile, settings),
             source = s.source,
+        )
+    }
+
+    private fun showGlycogenAlert() {
+        karoo.dispatch(
+            InRideAlert(
+                id = "glycogen-low",
+                icon = R.drawable.ic_gel,
+                title = context.getString(R.string.alert_glycogen_title),
+                detail = context.getString(R.string.alert_glycogen_detail, (prefs.settings().glycogenWarningLevel * 100).roundToInt()),
+                autoDismissMs = 20_000,
+                backgroundColor = R.color.alert_warning_background,
+                textColor = R.color.alert_text,
+            ),
+        )
+        karoo.dispatch(
+            PlayBeepPattern(
+                listOf(
+                    PlayBeepPattern.Tone(frequency = 2000, durationMs = 400),
+                    PlayBeepPattern.Tone(frequency = null, durationMs = 150),
+                    PlayBeepPattern.Tone(frequency = 2000, durationMs = 400),
+                ),
+            ),
         )
     }
 

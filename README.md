@@ -19,6 +19,8 @@ Extension für den **Hammerhead Karoo 3**: berechnet während der Fahrt den Kalo
 | **KH g/h** | aktueller Kohlenhydratverbrauch |
 | **Nächstes Gel (min)** | Minuten bis zum nächsten Gel |
 | **Gels** | Anzahl der Gels in dieser Fahrt |
+| **Glykogen %** | geschätzte verbleibende Glykogenspeicher |
+| **Fuel-Anzeige** (grafisch) | Minuten bis zum Gel, Fortschrittsbalken (grün → orange → rot), kcal/h und Glykogen |
 
 ### Tasten-Aktionen (Bonus Actions)
 
@@ -58,12 +60,26 @@ Je höher die Intensität (Leistung im Verhältnis zur FTP, sonst Anteil an der 
 |---|---|---|---|
 | KH-Anteil | 25 % | 60 % | 95 % |
 
-**4. Gel-Bedarf**
-- In den ersten **30 Minuten** reichen die Glykogenspeicher, es gibt keine Erinnerung.
+**4. Start der Verpflegung** (in der App wählbar)
+- **Nach fester Zeit** (Standard): In den ersten **30 Minuten** gibt es keine Erinnerung.
+- **Nach Glykogen**: Die App schätzt deine Glykogenspeicher, ca. 6 g pro kg Körpergewicht, bei 75 kg also 450 g. Die Verpflegung startet, sobald **15 %** davon verbraucht sind. Bei hartem Start kommt das erste Gel dadurch früher, bei lockerem später. Beispiel: 200 W → nach ca. 30 min, 120 W → nach ca. 87 min.
+- Fällt das Glykogen unter **25 %**, kommt einmalig eine Warnung.
+
+Einen Sensor, der Glykogen direkt misst, gibt es nicht. Der Wert wird aus den verbrannten minus den gegessenen Kohlenhydraten geschätzt.
+
+**5. Gel-Bedarf**
 - Danach sammelt die App einen „Bedarf“: **60 % der verbrannten Kohlenhydrate**, höchstens **60 g pro Stunde**. Mehr nimmt der Darm ohne Training kaum auf.
 - Sobald der Bedarf die Gel-Größe erreicht (Standard 25 g), kommt die Erinnerung. Zwischen zwei Gels liegen mindestens 10 Minuten.
 
 Beispiel bei 75 kg, FTP 250 W und konstant 200 W: Gels nach 55, 80, 105 … Minuten, also eins alle 25 Minuten (60 g/h).
+
+### Speicherung in der FIT-Datei
+
+Die App schreibt ihre Werte als Zusatzfelder (Developer Fields) in die Fahrt-Datei:
+- pro Sekunde: kcal/h, Kohlenhydrate g/h, Glykogen %, Anzahl Gels
+- als Zusammenfassung: kcal gesamt, Kohlenhydrate verbrannt und gegessen, Gels, Glykogen am Ende
+
+Anzeigen können sie z. B. **intervals.icu** oder **Golden Cheetah**. Strava ignoriert solche Zusatzfelder.
 
 Alle Werte stellst du in der App ein. Die Fahrt wird zwischengespeichert, falls die App mitten in der Fahrt neu startet.
 

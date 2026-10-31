@@ -33,4 +33,23 @@
     <string name="saved">Saved</string>
     <string name="invalid_input">Please check your input</string>
     <string name="disclaimer">All values are estimates. Not medical advice: listen to your body and test your fueling in training.</string>
+
+    <string name="dt_glycogen">Glycogen %</string>
+    <string name="dt_glycogen_desc">Estimated remaining glycogen stores</string>
+    <string name="dt_gauge">Fuel gauge</string>
+    <string name="dt_gauge_desc">Graphic: minutes until the next gel, progress bar, kcal/h and glycogen</string>
+    <string name="gauge_minutes">min to gel</string>
+    <string name="gauge_gels">%1$d gels</string>
+    <string name="gauge_kcal">%1$d kcal/h</string>
+    <string name="gauge_kcal_none">-- kcal/h</string>
+    <string name="gauge_glycogen">Glycogen %1$d %%</string>
+    <string name="gauge_start_phase">Start phase · %1$d %%</string>
+    <string name="alert_glycogen_title">Glycogen low!</string>
+    <string name="alert_glycogen_detail">Stores below %1$d %% – eat now and ease off if needed</string>
+    <string name="label_start_mode">Start fueling</string>
+    <string name="start_mode_time">After fixed time</string>
+    <string name="start_mode_glycogen">By glycogen</string>
+    <string name="label_glycogen_depletion">Start when this share of glycogen is used (%)</string>
+    <string name="label_glycogen_store">Glycogen stores (g, 0 = automatic)</string>
+    <string name="glycogen_store_hint">Automatic: %1$d g (6 g per kg body weight)</string>
 </resources>

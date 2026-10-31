@@ -31,4 +31,23 @@
     <string name="saved">Gespeichert</string>
     <string name="invalid_input">Bitte Eingaben prüfen</string>
     <string name="disclaimer">Alle Werte sind Schätzungen und keine medizinische Beratung. Hör auf deinen Körper und teste deine Verpflegung im Training.</string>
+
+    <string name="dt_glycogen">Glykogen %</string>
+    <string name="dt_glycogen_desc">Geschätzte verbleibende Glykogenspeicher</string>
+    <string name="dt_gauge">Fuel-Anzeige</string>
+    <string name="dt_gauge_desc">Grafik: Minuten bis zum nächsten Gel, Fortschrittsbalken, kcal/h und Glykogen</string>
+    <string name="gauge_minutes">min bis Gel</string>
+    <string name="gauge_gels">%1$d Gels</string>
+    <string name="gauge_kcal">%1$d kcal/h</string>
+    <string name="gauge_kcal_none">-- kcal/h</string>
+    <string name="gauge_glycogen">Glykogen %1$d %%</string>
+    <string name="gauge_start_phase">Startphase · %1$d %%</string>
+    <string name="alert_glycogen_title">Glykogen niedrig!</string>
+    <string name="alert_glycogen_detail">Speicher unter %1$d %% – jetzt essen, ggf. Tempo rausnehmen</string>
+    <string name="label_start_mode">Verpflegung starten</string>
+    <string name="start_mode_time">Nach fester Zeit</string>
+    <string name="start_mode_glycogen">Nach Glykogen</string>
+    <string name="label_glycogen_depletion">Start, wenn dieser Anteil Glykogen verbraucht ist (%)</string>
+    <string name="label_glycogen_store">Glykogenspeicher (g, 0 = automatisch)</string>
+    <string name="glycogen_store_hint">Automatisch: %1$d g (6 g pro kg Körpergewicht)</string>
 </resources>

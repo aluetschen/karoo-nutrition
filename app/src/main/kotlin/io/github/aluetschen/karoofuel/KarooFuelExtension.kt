@@ -6,6 +6,7 @@ import io.hammerhead.karooext.extension.KarooExtension
 import io.hammerhead.karooext.internal.Emitter
 import io.hammerhead.karooext.models.DataPoint
 import io.hammerhead.karooext.models.DataType
+import io.hammerhead.karooext.models.FitEffect
 import io.hammerhead.karooext.models.StreamState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +28,15 @@ class KarooFuelExtension : KarooExtension(EXTENSION_ID, BuildConfig.VERSION_NAME
             FuelDataType(engine, extension, "carbs-rate") { it.carbsBurnedPerHour },
             FuelDataType(engine, extension, "next-gel") { it.minutesToNextGel },
             FuelDataType(engine, extension, "gels") { it.gelsTaken.toDouble() },
+            FuelDataType(engine, extension, "glycogen") { it.glycogenPercent },
+            FuelGaugeDataType(engine, extension),
         )
+    }
+
+    private val fitRecorder by lazy { FitRecorder(engine) }
+
+    override fun startFit(emitter: Emitter<FitEffect>) {
+        fitRecorder.start(emitter)
     }
 
     override fun onCreate() {

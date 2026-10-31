@@ -15,14 +15,30 @@ data class RiderProfile(
     val sex: Sex,
 )
 
+/** When fueling starts. */
+enum class StartMode {
+    /** After a fixed ride time. */
+    TIME,
+    /** When a share of the estimated glycogen stores has been used. */
+    GLYCOGEN,
+}
+
 /** User-adjustable fueling settings. */
 data class FuelSettings(
     /** Carbohydrates per gel in grams. */
     val gelCarbsG: Double = 25.0,
     /** Upper limit of carbohydrate intake per hour (gut absorption limit), in grams. */
     val maxCarbsPerHourG: Double = 60.0,
-    /** Ride time before fueling starts (the first part of the ride runs on glycogen stores). */
+    /** How the start of fueling is determined. */
+    val startMode: StartMode = StartMode.TIME,
+    /** [StartMode.TIME]: ride time before fueling starts (the first part of the ride runs on glycogen stores). */
     val startAfterMinutes: Double = 30.0,
+    /** [StartMode.GLYCOGEN]: share of the glycogen stores used before fueling starts (0..1). */
+    val glycogenStartDepletion: Double = 0.15,
+    /** Size of the glycogen stores in grams; 0 = estimate from body weight. */
+    val glycogenStoreG: Double = 0.0,
+    /** Below this share of the stores, a one-time warning is shown (0..1). */
+    val glycogenWarningLevel: Double = 0.25,
     /** Share of the burned carbohydrates that should be replaced by gels (0..1). */
     val carbReplacementShare: Double = 0.6,
     /** Gross efficiency of cycling: share of metabolic energy that ends up as power on the pedals. */
@@ -100,6 +116,15 @@ object EnergyModel {
         val fraction = 0.25 + (intensity - 0.3) * (0.95 - 0.25) / (1.0 - 0.3)
         return fraction.coerceIn(0.25, 0.95)
     }
+
+    /**
+     * Glycogen stores (muscle + liver) of a rested, well-fed rider:
+     * about 6 g per kg body weight (e.g. 75 kg -> 450 g). Literature range roughly 5-8 g/kg.
+     */
+    const val GLYCOGEN_G_PER_KG = 6.0
+
+    fun glycogenStoreG(profile: RiderProfile, settings: FuelSettings): Double =
+        if (settings.glycogenStoreG > 0) settings.glycogenStoreG else profile.weightKg * GLYCOGEN_G_PER_KG
 
     /** Recommended carb intake per hour: share of the carb burn, capped by the absorption limit. */
     fun targetCarbsPerHour(carbsBurnedPerHour: Double, settings: FuelSettings): Double =

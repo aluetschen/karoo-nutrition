@@ -68,12 +68,69 @@
 
         <TextView
             style="@style/Label"
-            android:text="@string/label_start_after" />
+            android:text="@string/label_start_mode" />
 
-        <EditText
-            android:id="@+id/start_after"
-            style="@style/Input"
-            android:inputType="number" />
+        <RadioGroup
+            android:id="@+id/start_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@+id/start_mode_time"
+                style="@style/RadioFull"
+                android:text="@string/start_mode_time" />
+
+            <RadioButton
+                android:id="@+id/start_mode_glycogen"
+                style="@style/RadioFull"
+                android:text="@string/start_mode_glycogen" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:id="@+id/group_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Label"
+                android:text="@string/label_start_after" />
+
+            <EditText
+                android:id="@+id/start_after"
+                style="@style/Input"
+                android:inputType="number" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/group_glycogen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Label"
+                android:text="@string/label_glycogen_depletion" />
+
+            <EditText
+                android:id="@+id/glycogen_depletion"
+                style="@style/Input"
+                android:inputType="number" />
+
+            <TextView
+                style="@style/Label"
+                android:text="@string/label_glycogen_store" />
+
+            <EditText
+                android:id="@+id/glycogen_store"
+                style="@style/Input"
+                android:inputType="number" />
+
+            <TextView
+                android:id="@+id/glycogen_store_hint"
+                style="@style/Hint" />
+        </LinearLayout>
 
         <TextView
             style="@style/Label"

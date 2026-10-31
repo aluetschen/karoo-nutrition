@@ -44,7 +44,7 @@ class FuelTrackerTest {
     @Test
     fun `no gel during the start phase`() {
         val tracker = FuelTracker()
-        repeat(29 * 60) { assertTrue(!tracker.tick(1.0, 200.0, null, rider, settings)) }
+        repeat(29 * 60) { assertTrue(!tracker.tick(1.0, 200.0, null, rider, settings).gelDue) }
         assertEquals(0.0, tracker.state.fuelDueG)
         assertEquals(29 * 60 * 717.0 / 3600.0, tracker.state.kcalTotal, 2.0)
     }
@@ -54,7 +54,7 @@ class FuelTrackerTest {
         val tracker = FuelTracker()
         val gelTimes = mutableListOf<Double>()
         repeat(2 * 3600) {
-            if (tracker.tick(1.0, 200.0, 140.0, rider, settings)) {
+            if (tracker.tick(1.0, 200.0, 140.0, rider, settings).gelDue) {
                 gelTimes += tracker.state.rideSeconds / 60.0
                 tracker.registerGel(settings)
             }
@@ -70,7 +70,7 @@ class FuelTrackerTest {
     fun `forecast counts down to the next gel`() {
         val tracker = FuelTracker()
         repeat(40 * 60) { tracker.tick(1.0, 200.0, null, rider, settings) }
-        val minutes = assertNotNull(tracker.minutesToNextGel(settings))
+        val minutes = assertNotNull(tracker.minutesToNextGel(rider, settings))
         // 10 min into fueling at 60 g/h -> 10 g due, 15 g missing -> 15 min
         assertEquals(15.0, minutes, 0.5)
     }
@@ -80,7 +80,7 @@ class FuelTrackerTest {
         val tracker = FuelTracker()
         var alerts = 0
         repeat(70 * 60) {
-            if (tracker.tick(1.0, 200.0, null, rider, settings)) {
+            if (tracker.tick(1.0, 200.0, null, rider, settings).gelDue) {
                 alerts++
                 tracker.registerGel(settings)
                 if (alerts == 1) tracker.undoLastGel(settings)
@@ -97,6 +97,54 @@ class FuelTrackerTest {
         repeat(600) { tracker.tick(1.0, null, null, rider, settings) }
         assertEquals(0.0, tracker.state.kcalTotal)
         assertEquals(600.0, tracker.state.rideSeconds)
-        assertNull(tracker.minutesToNextGel(settings))
+        assertNull(tracker.minutesToNextGel(rider, settings))
+    }
+
+    private val glycogenSettings = FuelSettings(startMode = StartMode.GLYCOGEN)
+
+    @Test
+    fun `glycogen store is estimated from body weight`() {
+        assertEquals(450.0, EnergyModel.glycogenStoreG(rider, glycogenSettings), 1e-9)
+        assertEquals(500.0, EnergyModel.glycogenStoreG(rider, glycogenSettings.copy(glycogenStoreG = 500.0)), 1e-9)
+    }
+
+    @Test
+    fun `glycogen mode starts fueling earlier when riding hard`() {
+        // 200 W: ~134 g carbs/h -> 15 % of 450 g (67.5 g) used after ~30 min
+        assertEquals(30, fuelingStartMinute(200.0))
+        // 120 W: ~46 g carbs/h -> only after ~87 min
+        assertEquals(87, fuelingStartMinute(120.0))
+    }
+
+    private fun fuelingStartMinute(watts: Double): Int {
+        val tracker = FuelTracker()
+        repeat(4 * 3600) {
+            tracker.tick(1.0, watts, null, rider, glycogenSettings)
+            if (tracker.isFuelingActive(rider, glycogenSettings)) return (tracker.state.rideSeconds / 60).toInt()
+        }
+        error("fueling never started")
+    }
+
+    @Test
+    fun `glycogen mode forecast includes the wait for the start`() {
+        val tracker = FuelTracker()
+        repeat(15 * 60) { tracker.tick(1.0, 200.0, null, rider, glycogenSettings) }
+        // ~15 min until fueling starts + 25 min until the first gel at 60 g/h
+        assertEquals(40.0, assertNotNull(tracker.minutesToNextGel(rider, glycogenSettings)), 1.5)
+    }
+
+    @Test
+    fun `low glycogen warning appears once`() {
+        val tracker = FuelTracker()
+        val warnings = mutableListOf<Int>()
+        repeat(5 * 3600) {
+            val result = tracker.tick(1.0, 200.0, null, rider, settings)
+            if (result.gelDue) tracker.registerGel(settings)
+            if (result.glycogenLow) warnings += (tracker.state.rideSeconds / 60).toInt()
+        }
+        assertEquals(1, warnings.size)
+        // net loss ~134 g/h burned minus 60 g/h eaten -> below 25 % of 450 g after roughly 4 h
+        assertTrue(warnings.single() in 210..270, "was ${warnings.single()}")
+        assertTrue(tracker.glycogenFraction(rider, settings) < 0.25)
     }
 }
